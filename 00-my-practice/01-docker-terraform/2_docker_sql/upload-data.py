@@ -11,7 +11,6 @@ def main(params):
     host = params.host
     port = params.port
     db = params.db
-    table_name = params.table_name
     url = params.url
 
     parquet_name = 'output.parquet'
@@ -20,14 +19,15 @@ def main(params):
 
     df_pq = pq.ParquetFile(parquet_name)
     df = pd.DataFrame()
+
     # THIS IS POINTLESS
     for batch in df_pq.iter_batches():
 #        print('batch ingesting...')
         df = pd.concat([df, batch.to_pandas()])
 
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
-    df.head(0).to_sql(con=engine, name=table_name, if_exists='replace')
-    df.head(10).to_sql(con=engine, name=table_name, if_exists='append')
+    df.head(0).to_sql(con=engine, name='yellow_taxi_trips', if_exists='replace')
+    df.to_sql(con=engine, name='yellow_taxi_trips', if_exists='append', chunksize=100000)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Ingesting the data')
@@ -37,7 +37,6 @@ if __name__ == '__main__':
     parser.add_argument('--host', help='host for postgres') 
     parser.add_argument('--port', help='port for postgres') 
     parser.add_argument('--db', help='database name for postgres')
-    parser.add_argument('--table_name', help='name of the tablewhere we will write the results')
     parser.add_argument('--url', help='url of thge csv file')
      
     args = parser.parse_args()
