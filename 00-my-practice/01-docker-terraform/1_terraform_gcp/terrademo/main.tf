@@ -9,13 +9,13 @@ terraform {
 
 provider "google" {
   credentials = "./keys/my-creds.json"
-  project     = "capable-blend-427212-e6"
-  region      = "us-west1"
+  project     = var.project_id
+  region      = var.region
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  name          = "mmajer-terraform-bucket"
-  location      = "US"
+  name          = var.gcs_bucket_name
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {
@@ -26,4 +26,8 @@ resource "google_storage_bucket" "demo-bucket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "demo-dataset" {
+  dataset_id = var.bq_dataset_name
 }
