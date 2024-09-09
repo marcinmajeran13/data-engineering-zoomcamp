@@ -4,6 +4,7 @@ RUN apt-get install wget
 RUN pip install pandas sqlalchemy psycopg2 pyarrow
 
 WORKDIR /app
-COPY upload-data.py upload-data.py
+COPY data-ingest.py data-ingest.py
 
-ENTRYPOINT [ "python", "upload-data.py" ]
+ENTRYPOINT [ "python", "data-ingest.py" ]
+
